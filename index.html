@@ -1,0 +1,108 @@
+<link rel="stylesheet" href="ControlBar.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/4.5.0/dash.all.min.js"></script>
+<script src="ControlBar.js"></script>
+
+<style>
+	* {
+		margin: 0;
+		padding: 0;
+	}
+	
+	body {
+		background-color: black;
+	}
+	
+	#videoContainer {
+		display: flex;
+		flex-direction: column;
+	}
+	
+	video {
+		max-height: calc(100vh - 100px);
+	}
+	
+	#captionBtn, #trackSwitchBtn, #fullscreenBtn {
+		display: none;
+	}
+</style>
+
+<script>
+    function init()
+	{
+        var url = "manifest.mpd"; // TODO Change manifest path here
+        var videoElement = document.querySelector('.videoContainer video');
+        var player = dashjs.MediaPlayer().create();
+
+        player.initialize();
+		
+		player.updateSettings(
+		{
+            "streaming":
+			{
+                "scheduling":
+				{
+                    "scheduleWhilePaused": false,   // stops the player from loading segments while paused
+                },
+                "buffer":
+				{
+                    "fastSwitchEnabled": true,   // enables buffer replacement when switching bitrates for faster switching
+					"bufferTimeAtTopQuality": 4,
+                    "bufferTimeAtTopQualityLongForm": 4,
+                    "stableBufferTime": 4,
+                    "longFormContentDurationThreshold": 4,
+                }
+            }
+        });
+		
+		player.attachView(videoElement);
+        player.attachSource(url);
+		
+        var controlbar = new ControlBar(player);
+        controlbar.initialize();
+		
+		videoElement.addEventListener("click", function()
+		{
+			player.isPaused() ? player.play() : player.pause();
+		});
+    }
+	
+	window.onload = function()
+	{
+		init();
+	}
+</script>
+
+<div class="dash-video-player">
+    <div class="videoContainer" id="videoContainer">
+        <video preload="auto" autoplay=""></video>
+        <div id="videoController" class="video-controller unselectable">
+            <div id="playPauseBtn" class="btn-play-pause" title="Play/Pause">
+                <span id="iconPlayPause" class="icon-play"></span>
+            </div>
+            <span id="videoTime" class="time-display">00:00:00</span>
+			<div class="seekContainer">
+                <div id="seekbar" class="seekbar seekbar-complete">
+                    <div id="seekbar-buffer" class="seekbar seekbar-buffer"></div>
+                    <div id="seekbar-play" class="seekbar seekbar-play"></div>
+                </div>
+            </div>
+            <span id="videoDuration" class="duration-display">00:00:00</span>
+			<div id="trackSwitchBtn" class="control-icon-layout" title="A/V Tracks">
+                <span class="icon-tracks"></span>
+            </div>
+            <div id="captionBtn" class="btn-caption control-icon-layout" title="Closed Caption">
+                <span class="icon-caption"></span>
+            </div>
+			<input type="range" id="volumebar" class="volumebar" value="1" min="0" max="1" step=".01">
+            <div id="muteBtn" class="btn-mute control-icon-layout" title="Mute">
+                <span id="iconMute" class="icon-mute-off"></span>
+            </div>
+			<div id="bitrateListBtn" class="control-icon-layout" title="Bitrate List">
+                <span class="icon-bitrate"></span>
+            </div>
+			<div id="fullscreenBtn" class="btn-fullscreen control-icon-layout" title="Fullscreen">
+                <span class="icon-fullscreen-enter"></span>
+            </div>
+        </div>
+    </div>
+</div>
