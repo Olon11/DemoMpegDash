@@ -1,4 +1,4 @@
-# Demo MPEG-DASH
+# Démo MPEG-DASH
 
 Démo MPEG-DASH utilisée durant les portes ouvertes de l'École de technologie supérieure.
 
